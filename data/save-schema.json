@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DevOPS Clicker Save",
+  "description": "Схема сохранения игры DevOPS Clicker (localStorage ключ: devops-clicker-save-v1)",
+  "type": "object",
+  "required": ["version", "resources"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "Версия схемы сохранения; используется для миграций в js/systems/load.js",
+      "const": 1
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "commits": { "type": "number", "minimum": 0, "description": "Текущая валюта — коммиты" },
+        "lifetimeCommits": { "type": "number", "minimum": 0, "description": "Всего коммитов за всё время" },
+        "runCommits": { "type": "number", "minimum": 0, "description": "Коммиты за текущий ран (база формулы престижа)" },
+        "prestigeTokens": { "type": "number", "minimum": 0, "description": "Cloud Tokens (текущие)" },
+        "lifetimePrestigeTokens": { "type": "number", "minimum": 0, "description": "Cloud Tokens за всё время" }
+      }
+    },
+    "click": {
+      "type": "object",
+      "properties": {
+        "basePower": { "type": "number", "description": "Базовая сила клика" }
+      }
+    },
+    "buildings": {
+      "type": "object",
+      "description": "id генератора -> количество",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "upgrades": {
+      "type": "object",
+      "description": "id улучшения -> true (куплено)",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "achievements": {
+      "type": "object",
+      "description": "id достижения -> запись о получении",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "unlockedAt": { "type": "number", "description": "unix ms получения" }
+        }
+      }
+    },
+    "events": {
+      "type": "object",
+      "properties": {
+        "lastEventAt": { "type": "number", "description": "unix ms последнего события" }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "Статистика: клики, история CPS, сегодня/сессия, время в игре, события, престиж и т.д."
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "sound": { "type": "boolean" },
+        "volume": { "type": "number", "minimum": 0, "maximum": 1 },
+        "animations": { "type": "boolean" },
+        "matrixRain": { "type": "boolean" },
+        "scanlines": { "type": "boolean" },
+        "reducedMotion": { "type": "boolean" },
+        "featureFlagsExp": { "type": "boolean" },
+        "buyAmount": { "type": "integer" }
+      }
+    },
+    "flags": {
+      "type": "object",
+      "properties": {
+        "unlocks": { "type": "object", "description": "target -> value из unlock-апгрейдов" }
+      }
+    },
+    "lastSave": { "type": ["number", "null"], "description": "unix ms последнего сохранения (база офлайн-дохода)" }
+  }
+}

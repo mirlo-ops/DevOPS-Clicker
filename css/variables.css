@@ -1,0 +1,68 @@
+/* ============================================================
+   variables.css — единая система токенов дизайна (VS Code Dark+)
+   ============================================================ */
+:root {
+  /* Палитра VS Code Dark */
+  --vscode-background: #1e1e1e;
+  --vscode-sidebar: #252526;
+  --vscode-panel: #2d2d30;
+  --vscode-border: #3c3c3c;
+  --vscode-text: #d4d4d4;
+  --vscode-muted: #858585;
+  --vscode-accent: #007acc;
+  --vscode-green: #4ec9b0;
+  --vscode-yellow: #dcdcaa;
+  --vscode-orange: #cea672;
+  --vscode-red: #f44747;
+  --vscode-purple: #c586c0;
+  --vscode-blue: #569cd6;
+  --vscode-string: #ce9178;
+
+  /* Хакерские цвета */
+  --matrix-green: #00ff41;
+  --terminal-black: #0d0d0d;
+  --scanline: rgba(0, 255, 65, 0.04);
+
+  /* Производные токены */
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-active: rgba(0, 122, 204, 0.16);
+  --accent-glow: 0 0 12px rgba(0, 122, 204, 0.55);
+  --green-glow: 0 0 10px rgba(78, 201, 176, 0.5);
+  --red-glow: 0 0 10px rgba(244, 71, 71, 0.5);
+
+  /* Шрифты: локальные моноширинные с системным fallback (без интернета) */
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas,
+    "SF Mono", Monaco, "Courier New", monospace;
+
+  /* Размеры layout */
+  --titlebar-h: 34px;
+  --activitybar-w: 48px;
+  --statusbar-h: 26px;
+  --sidebar-w: 320px;
+  --panel-h: 220px;
+  --radius: 4px;
+
+  /* Служебное */
+  --transition-fast: 120ms ease;
+  --transition-med: 220ms ease;
+  --z-modal: 900;
+  --z-tooltip: 950;
+  --z-notification: 970;
+  --z-floating: 800;
+}
+
+/* Уважение к prefers-reduced-motion: отключаем переходы глобально */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-med: 0ms;
+  }
+}
+
+/* Класс, который навешивается на body из настроек игры */
+body.no-anim *,
+body.no-anim *::before,
+body.no-anim *::after {
+  animation: none !important;
+  transition: none !important;
+}

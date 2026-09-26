@@ -1,0 +1,81 @@
+/* ============================================================
+   notifications.css — всплывающие уведомления и floating-числа
+   ============================================================ */
+.notifications {
+  position: fixed;
+  right: 14px;
+  bottom: calc(var(--statusbar-h) + 14px);
+  z-index: var(--z-notification);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+}
+
+.notification {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--vscode-border);
+  background: #252526;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: notify-in 200ms ease;
+  font-size: 12px;
+}
+
+.notification--hide {
+  animation: notify-out 250ms ease forwards;
+}
+
+.notification--achievement {
+  border-color: var(--vscode-orange);
+}
+
+.notification--event {
+  border-color: var(--vscode-purple);
+}
+
+.notification--error {
+  border-color: var(--vscode-red);
+}
+
+.notification--success {
+  border-color: var(--vscode-green);
+}
+
+.notification__title {
+  font-weight: 700;
+  color: var(--vscode-yellow);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notification__body {
+  color: var(--vscode-muted);
+}
+
+/* Слой всплывающих чисел при кликах */
+.floating-layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-floating);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.float-text {
+  position: absolute;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--matrix-green);
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.7);
+  animation: float-up 900ms ease-out forwards;
+  white-space: nowrap;
+}
+
+.float-text--crit {
+  font-size: 21px;
+  color: var(--vscode-yellow);
+  text-shadow: 0 0 10px rgba(220, 220, 170, 0.8);
+}

@@ -1,0 +1,194 @@
+/* ============================================================
+   stats.css — раздел статистики: сетки, строки, sparkline
+   ============================================================ */
+.stats-wrap {
+  padding: 12px 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stat-card {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--vscode-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.stat-card__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--vscode-muted);
+}
+
+.stat-card__value {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--vscode-green);
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+
+.stat-card__sub {
+  font-size: 10.5px;
+  color: var(--vscode-muted);
+}
+
+/* Строки «ключ: значение» */
+.stat-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 5px 8px;
+  font-size: 12px;
+  border-bottom: 1px dashed rgba(60, 60, 60, 0.45);
+}
+
+.stat-row:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.stat-row__key {
+  color: var(--vscode-muted);
+}
+
+.stat-row__val {
+  color: var(--vscode-text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Sparkline (canvas вписывается в контейнер) */
+.spark-block {
+  margin: 12px 0;
+}
+
+.spark-block__title {
+  font-size: 11px;
+  color: var(--vscode-muted);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.spark {
+  width: 100%;
+  height: 90px;
+  background: var(--terminal-black);
+  border: 1px solid var(--vscode-border);
+  border-radius: 4px;
+  display: block;
+}
+
+/* Топ генераторов по доходу */
+.top-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.top-item__bar {
+  grid-column: 1 / -1;
+  height: 3px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.top-item__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vscode-accent), var(--matrix-green));
+  transition: width var(--transition-med);
+}
+
+/* Вкладки разделов статистики (Обзор/Производство/...) */
+.stats-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--vscode-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.setting-row__label { color: var(--vscode-text); }
+.setting-row__hint { color: var(--vscode-muted); font-size: 10.5px; }
+
+input[type="checkbox"].switch {
+  appearance: none;
+  width: 34px;
+  height: 18px;
+  border-radius: 9px;
+  background: #3c3c3c;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--transition-med);
+  outline-offset: 2px;
+  flex-shrink: 0;
+}
+input[type="checkbox"].switch::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--vscode-muted);
+  transition: transform var(--transition-med), background var(--transition-med);
+}
+input[type="checkbox"].switch:checked { background: var(--vscode-accent); }
+input[type="checkbox"].switch:checked::after {
+  transform: translateX(16px);
+  background: #fff;
+}
+
+input[type="range"].slider {
+  accent-color: var(--vscode-accent);
+  width: 120px;
+}
+
+.danger-zone {
+  margin-top: 16px;
+  border: 1px solid var(--vscode-red);
+  border-radius: 6px;
+  padding: 12px;
+  background: rgba(244, 71, 71, 0.05);
+}
+
+.danger-zone__title {
+  color: var(--vscode-red);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.bare-list { list-style: none; padding: 0; margin: 0; }

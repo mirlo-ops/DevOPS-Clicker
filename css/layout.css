@@ -1,0 +1,182 @@
+/* ============================================================
+   layout.css — каркас интерфейса VS Code:
+   titlebar / activity bar / sidebar / editor / panel / statusbar
+   ============================================================ */
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-rows: var(--titlebar-h) 1fr auto var(--statusbar-h);
+  grid-template-columns: var(--activitybar-w) 1fr;
+  grid-template-areas:
+    "titlebar titlebar"
+    "activity main"
+    "activity panel"
+    "status status";
+  min-height: 0;
+}
+
+/* ---------- Title bar ---------- */
+.titlebar {
+  grid-area: titlebar;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  background: #323233;
+  border-bottom: 1px solid var(--vscode-border);
+  user-select: none;
+}
+
+.titlebar__logo {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.titlebar__title {
+  font-size: 12px;
+  color: var(--vscode-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titlebar__tabs {
+  display: flex;
+  gap: 2px;
+  margin-left: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.titlebar__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.titlebar__spacer {
+  flex: 1;
+}
+
+.titlebar__actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ---------- Activity bar ---------- */
+.activitybar {
+  grid-area: activity;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 6px;
+  background: var(--vscode-sidebar);
+  border-right: 1px solid var(--vscode-border);
+}
+
+.activitybar__spacer {
+  flex: 1;
+}
+
+/* ---------- Основная область ---------- */
+.main {
+  grid-area: main;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 0;
+  min-width: 0;
+}
+
+.main--full {
+  grid-template-columns: 1fr;
+}
+
+/* Боковая панель магазина (скрыта на вкладках без магазина) */
+.sidepanel {
+  background: var(--vscode-sidebar);
+  border-right: 1px solid var(--vscode-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidepanel__header {
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--vscode-muted);
+  border-bottom: 1px solid var(--vscode-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.sidepanel__body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Редактор — игровая зона */
+.editor {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--vscode-background);
+}
+
+.editor__scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Нижняя панель ---------- */
+.panel {
+  grid-area: panel;
+  height: var(--panel-h);
+  background: var(--vscode-panel);
+  border-top: 1px solid var(--vscode-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel__tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--vscode-border);
+  flex: none;
+  align-items: flex-end;
+  height: 30px;
+}
+
+.panel__body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ---------- Status bar ---------- */
+.statusbar {
+  grid-area: status;
+}
+
+/* Игровая зона (кликер) центрируется в редакторе */
+.click-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px 16px;
+  flex: none;
+}
