@@ -1,0 +1,89 @@
+/* ============================================================
+   terminal.css — нижняя панель терминала с логами
+   ============================================================ */
+.terminal {
+  font-size: 12px;
+  padding: 6px 12px 12px;
+  min-height: 100%;
+}
+
+.terminal__line {
+  display: flex;
+  gap: 8px;
+  line-height: 1.65;
+  animation: log-in 140ms ease;
+  word-break: break-word;
+}
+
+.terminal__time {
+  color: #6a6a6a;
+  flex: none;
+}
+
+.terminal__tag {
+  flex: none;
+  font-weight: 700;
+}
+
+.terminal__msg {
+  color: var(--vscode-text);
+}
+
+/* Цвета по типу сообщения */
+.terminal__line--info .terminal__tag { color: var(--vscode-blue); }
+.terminal__line--click .terminal__tag { color: var(--matrix-green); }
+.terminal__line--click .terminal__msg { color: var(--matrix-green); }
+.terminal__line--buy .terminal__tag { color: var(--vscode-yellow); }
+.terminal__line--event .terminal__tag { color: var(--vscode-purple); }
+.terminal__line--event .terminal__msg { color: var(--vscode-purple); }
+.terminal__line--achievement .terminal__tag { color: var(--vscode-orange); }
+.terminal__line--achievement .terminal__msg { color: var(--vscode-orange); }
+.terminal__line--warn .terminal__tag { color: var(--vscode-red); }
+.terminal__line--warn .terminal__msg { color: #ff9b9b; }
+.terminal__line--save .terminal__tag { color: var(--vscode-muted); }
+.terminal__line--prestige .terminal__tag { color: #ffffff; }
+.terminal__line--prestige .terminal__msg { color: var(--vscode-purple); text-shadow: 0 0 6px rgba(197,134,192,.5); }
+
+/* Строка приглашения внизу терминала */
+.terminal__prompt {
+  color: var(--matrix-green);
+}
+.terminal__prompt::after {
+  content: "▋";
+  animation: blink 1s steps(1) infinite;
+}
+
+/* Вкладка Problems — счётчики */
+.problems {
+  padding: 8px 14px;
+  font-size: 12px;
+  display: flex;
+  gap: 18px;
+}
+
+.problems__err { color: var(--vscode-red); }
+.problems__warn { color: var(--vscode-yellow); }
+.problems__ok { color: var(--vscode-green); }
+
+/* Output-вкладка — активные эффекты/события */
+.effects-list {
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effect-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  border: 1px solid var(--vscode-border);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.effect-chip--good { border-color: var(--vscode-green); color: var(--vscode-green); }
+.effect-chip--bad { border-color: var(--vscode-red); color: var(--vscode-red); }
+.effect-chip__timer { opacity: 0.75; font-variant-numeric: tabular-nums; }

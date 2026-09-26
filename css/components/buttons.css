@@ -1,0 +1,132 @@
+/* ============================================================
+   buttons.css — кнопки в стиле VS Code
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: #3a3d41;
+  color: var(--vscode-text);
+  transition: background var(--transition-fast), transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: #45494e;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--vscode-accent);
+  color: #ffffff;
+}
+.btn--primary:hover:not(:disabled) {
+  background: #1f8ad4;
+  box-shadow: var(--accent-glow);
+}
+
+.btn--success {
+  background: #2ea043;
+  color: #ffffff;
+}
+.btn--success:hover:not(:disabled) {
+  background: #3fb950;
+  box-shadow: var(--green-glow);
+}
+
+.btn--danger {
+  background: #a12622;
+  color: #ffffff;
+}
+.btn--danger:hover:not(:disabled) {
+  background: var(--vscode-red);
+  box-shadow: var(--red-glow);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--vscode-border);
+}
+.btn--ghost:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.btn--small {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+/* Сегментированный переключатель (покупка x1/x10/max) */
+.btn-group {
+  display: inline-flex;
+  border: 1px solid var(--vscode-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.btn-group .btn {
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 2px 10px;
+  font-size: 11px;
+}
+
+.btn-group .btn--on {
+  background: var(--vscode-accent);
+  color: #fff;
+}
+
+/* Главная кнопка кликера — терминальная строка команды */
+.commit-btn {
+  position: relative;
+  display: block;
+  padding: 16px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--matrix-green);
+  background: var(--terminal-black);
+  border: 1px solid var(--matrix-green);
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.35), inset 0 0 18px rgba(0, 255, 65, 0.08);
+  animation: pulse-glow 3s ease-in-out infinite;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.commit-btn::before {
+  content: "$ ";
+  color: var(--vscode-muted);
+}
+
+.commit-btn:hover {
+  box-shadow: 0 0 18px rgba(0, 255, 65, 0.6), inset 0 0 24px rgba(0, 255, 65, 0.12);
+}
+
+.commit-btn.is-pressed {
+  animation: press-pop 140ms ease;
+}
+
+/* Индикатор силы клика под кнопкой */
+.click-power {
+  font-size: 12px;
+  color: var(--vscode-muted);
+}
+.click-power b {
+  color: var(--vscode-yellow);
+}

@@ -1,0 +1,133 @@
+/* ============================================================
+   vscode-theme.css — тематические элементы VS Code:
+   вкладки редактора, activity bar кнопки, status bar
+   ============================================================ */
+
+/* ---------- Вкладки-«редакторы» ---------- */
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--vscode-muted);
+  background: transparent;
+  border-top: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--vscode-text);
+  background: var(--bg-hover);
+}
+
+.tab--active {
+  color: var(--vscode-text);
+  background: var(--vscode-background);
+  border-top: 2px solid var(--vscode-accent);
+}
+
+.tab__icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* ---------- Кнопки Activity bar ---------- */
+.activity-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vscode-muted);
+  border-left: 2px solid transparent;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.activity-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.activity-btn:hover {
+  color: var(--vscode-text);
+}
+
+.activity-btn--active {
+  color: #ffffff;
+  border-left-color: var(--vscode-accent);
+}
+
+/* Бейдж (например, число доступных апгрейдов) */
+.activity-btn__badge {
+  position: absolute;
+  right: 4px;
+  bottom: 5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--vscode-accent);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* ---------- Status bar ---------- */
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  background: var(--vscode-accent);
+  color: #ffffff;
+  font-size: 11.5px;
+  user-select: none;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.statusbar::-webkit-scrollbar {
+  display: none;
+}
+
+.statusbar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.statusbar__item--right {
+  margin-left: auto;
+}
+
+.statusbar__item--warn {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0 6px;
+  border-radius: 3px;
+}
+
+.statusbar--alert {
+  background: var(--vscode-red);
+}
+
+/* ---------- Хлебные крошки / заголовок файла ---------- */
+.breadcrumbs {
+  padding: 4px 16px;
+  font-size: 11px;
+  color: var(--vscode-muted);
+  border-bottom: 1px solid rgba(60, 60, 60, 0.5);
+  flex: none;
+}
+
+.breadcrumbs span {
+  color: var(--vscode-text);
+}

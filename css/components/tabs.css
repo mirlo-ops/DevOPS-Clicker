@@ -1,0 +1,44 @@
+/* ============================================================
+   tabs.css — вкладки внутри панелей (магазин, статистика)
+   ============================================================ */
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px 0;
+  border-bottom: 1px solid var(--vscode-border);
+  background: var(--vscode-sidebar);
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--vscode-muted);
+  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--vscode-text);
+  background: var(--bg-hover);
+}
+
+.tab-btn--active {
+  color: var(--vscode-text);
+  background: var(--vscode-background);
+  border-color: var(--vscode-border);
+  margin-bottom: -1px;
+  padding-bottom: 6px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content--active {
+  display: block;
+  animation: fade-slide-in 160ms ease;
+}

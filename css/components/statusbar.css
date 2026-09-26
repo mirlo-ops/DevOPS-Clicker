@@ -1,0 +1,28 @@
+/* ============================================================
+   statusbar.css — элементы статус-бара
+   ============================================================ */
+.statusbar__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusbar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9cd1ff;
+  transition: background var(--transition-fast);
+}
+
+.statusbar__dot--saved {
+  background: #7ee787;
+}
+
+.statusbar__dot--dirty {
+  background: #ffd33d;
+}
+
+.statusbar__fps {
+  opacity: 0.8;
+}

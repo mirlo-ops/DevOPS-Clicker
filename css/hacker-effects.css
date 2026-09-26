@@ -1,0 +1,106 @@
+/* ============================================================
+   hacker-effects.css — матричный дождь, scanlines, glitch, свечения
+   ============================================================ */
+
+/* Matrix rain: canvas на весь экран, приглушён, не мешает UI */
+#matrix-rain {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+/* Scanlines поверх всего (тонкие, едва заметные) */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--scanline) 0px,
+    var(--scanline) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Glitch-заголовок: два псевдо-слоя с цветовым сдвигом */
+.glitch {
+  position: relative;
+  display: inline-block;
+  color: var(--matrix-green);
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glitch::before {
+  color: #ff00d4;
+  transform: translate(-1.5px, -1px);
+  animation: glitch-shift 4s infinite linear alternate-reverse;
+  opacity: 0.55;
+}
+
+.glitch::after {
+  color: #00e5ff;
+  transform: translate(1.5px, 1px);
+  animation: glitch-shift 3.3s infinite linear alternate;
+  opacity: 0.55;
+}
+
+/* Неоновое свечение для важных элементов */
+.neon-green {
+  color: var(--matrix-green);
+  text-shadow: 0 0 6px rgba(0, 255, 65, 0.7);
+}
+
+.neon-blue {
+  color: var(--vscode-blue);
+  text-shadow: 0 0 6px rgba(86, 156, 214, 0.7);
+}
+
+/* ASCII-арт блок */
+.ascii-art {
+  color: var(--matrix-green);
+  font-size: 9px;
+  line-height: 1.15;
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.4);
+  user-select: none;
+  white-space: pre;
+}
+
+/* Печататающаяся строка (эффект typewriter использует JS + этот курсор) */
+.typewriter::after {
+  content: "▋";
+  animation: blink 1s steps(1) infinite;
+  color: var(--matrix-green);
+}
+
+/* Отключение эффектов настройками игры */
+body.no-scanlines .scanlines {
+  display: none;
+}
+body.no-matrix #matrix-rain {
+  display: none;
+}
+
+/* Reduced motion из настроек: убираем глитч и бегущие эффекты */
+body.reduced-motion .glitch::before,
+body.reduced-motion .glitch::after {
+  animation: none;
+  display: none;
+}
