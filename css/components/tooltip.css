@@ -1,0 +1,48 @@
+/* ============================================================
+   tooltip.css — тултипы с деталями товаров
+   ============================================================ */
+.tooltip {
+  position: fixed;
+  z-index: var(--z-tooltip);
+  max-width: 300px;
+  padding: 8px 10px;
+  background: #252526;
+  border: 1px solid var(--vscode-accent);
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  font-size: 11.5px;
+  line-height: 1.55;
+  pointer-events: none;
+  color: var(--vscode-text);
+}
+
+.tooltip__title {
+  color: var(--vscode-yellow);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.tooltip__desc {
+  color: var(--vscode-muted);
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.tooltip__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tooltip__row b {
+  color: var(--vscode-green);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.tooltip__hint {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--vscode-border);
+  color: var(--vscode-muted);
+}

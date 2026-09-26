@@ -1,0 +1,93 @@
+/* ============================================================
+   building-card.css — карточки генераторов
+   ============================================================ */
+.building-card {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(60, 60, 60, 0.4);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  position: relative;
+}
+
+.building-card:hover {
+  background: var(--bg-hover);
+}
+
+.building-card--locked {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.building-card--unaffordable .building-card__cost {
+  color: var(--vscode-red);
+}
+
+.building-card--just-bought {
+  animation: card-unlock 600ms ease;
+}
+
+.building-card__icon {
+  grid-row: span 2;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--vscode-border);
+  color: var(--matrix-green);
+}
+
+.building-card__name {
+  font-size: 12.5px;
+  color: var(--vscode-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.building-card__desc {
+  grid-column: 2;
+  font-size: 10.5px;
+  color: var(--vscode-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.building-card__right {
+  grid-row: span 2;
+  text-align: right;
+}
+
+.building-card__owned {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vscode-yellow);
+  font-variant-numeric: tabular-nums;
+}
+
+.building-card__cost {
+  font-size: 11px;
+  color: var(--vscode-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.building-card__meta {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  color: var(--vscode-muted);
+  padding-top: 2px;
+}
+
+.building-card__meta b {
+  color: var(--vscode-blue);
+  font-weight: 400;
+}

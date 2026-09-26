@@ -1,0 +1,126 @@
+/* ============================================================
+   responsive.css — адаптация под планшет и мобильные
+   ============================================================ */
+
+/* ---------- Планшет (< 1100px): уже боковая панель ---------- */
+@media (max-width: 1100px) {
+  :root {
+    --sidebar-w: 280px;
+    --panel-h: 180px;
+  }
+}
+
+/* ---------- Мобильные (< 760px) ---------- */
+@media (max-width: 760px) {
+  :root {
+    --activitybar-w: 0px; /* activity bar уходит вниз */
+    --statusbar-h: 58px;  /* статусбар превращается в нижнюю навигацию */
+    --panel-h: 150px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "titlebar"
+      "main"
+      "panel"
+      "status";
+  }
+
+  /* Activity bar -> горизонтальная навигация внутри status bar */
+  .activitybar {
+    position: static;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-right: none;
+    background: transparent;
+  }
+
+  .activitybar__spacer {
+    display: none;
+  }
+
+  .activity-btn {
+    width: 44px;
+    height: 44px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .activity-btn--active {
+    border-bottom-color: #ffffff;
+  }
+
+  /* Status bar становится контейнером для нижней навигации */
+  .statusbar {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 2px 8px;
+    align-content: flex-start;
+  }
+
+  .statusbar__nav {
+    order: 10;
+    width: 100%;
+  }
+
+  /* Основная область: магазин над кликером, одной колонкой */
+  .main {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+
+  .main--full {
+    grid-template-rows: 1fr;
+  }
+
+  .sidepanel {
+    order: 2;
+    border-right: none;
+    border-top: 1px solid var(--vscode-border);
+  }
+
+  .editor {
+    order: 1;
+  }
+
+  /* Крупная кнопка кликера */
+  .commit-btn {
+    min-width: 240px !important;
+    padding: 18px 22px !important;
+    font-size: 15px !important;
+  }
+
+  .click-zone {
+    gap: 12px;
+    padding: 14px 10px;
+  }
+
+  .ascii-art {
+    display: none; /* экономим вертикальное пространство */
+  }
+
+  .titlebar__tabs {
+    display: none; /* вкладки дублируются нижней навигацией */
+  }
+}
+
+/* Очень узкие экраны */
+@media (max-width: 420px) {
+  .building-card__meta {
+    display: none;
+  }
+}
+
+/* Печать / reduced motion на уровне системы — отключаем тяжёлые слои */
+@media (prefers-reduced-motion: reduce) {
+  .scanlines {
+    display: none;
+  }
+  #matrix-rain {
+    display: none;
+  }
+}

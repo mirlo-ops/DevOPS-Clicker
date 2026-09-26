@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DevOPS Clicker — кликер в стиле VS Code про CI/CD, облака и деплои" />
+  <title>DevOPS Clicker — git commit -m "fix prod"</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+
+  <!-- CSS: от базового к компонентам -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/vscode-theme.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/hacker-effects.css" />
+  <link rel="stylesheet" href="css/components/buttons.css" />
+  <link rel="stylesheet" href="css/components/panels.css" />
+  <link rel="stylesheet" href="css/components/tabs.css" />
+  <link rel="stylesheet" href="css/components/sidebar.css" />
+  <link rel="stylesheet" href="css/components/statusbar.css" />
+  <link rel="stylesheet" href="css/components/terminal.css" />
+  <link rel="stylesheet" href="css/components/building-card.css" />
+  <link rel="stylesheet" href="css/components/upgrade-card.css" />
+  <link rel="stylesheet" href="css/components/modal.css" />
+  <link rel="stylesheet" href="css/components/tooltip.css" />
+  <link rel="stylesheet" href="css/components/stats.css" />
+  <link rel="stylesheet" href="css/components/achievements.css" />
+  <link rel="stylesheet" href="css/components/notifications.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <!-- Фон: matrix rain (управляется настройками) -->
+  <canvas id="matrix-rain" aria-hidden="true"></canvas>
+  <div id="scanlines" class="scanlines" aria-hidden="true"></div>
+
+  <!-- Каркас приложения формирует js/ui/dom.js; здесь только контейнеры -->
+  <div id="app" class="app"></div>
+
+  <!-- Всплывающие числа при кликах -->
+  <div id="floating-layer" class="floating-layer" aria-hidden="true"></div>
+
+  <!-- Контейнер модальных окон -->
+  <div id="modal-root" class="modal-root" hidden></div>
+
+  <!-- Контейнер уведомлений -->
+  <div id="notifications" class="notifications" aria-live="polite"></div>
+
+  <!-- Тултипы -->
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+  <!-- Единственный вход для логики -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

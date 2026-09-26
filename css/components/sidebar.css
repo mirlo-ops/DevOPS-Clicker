@@ -1,0 +1,26 @@
+/* ============================================================
+   sidebar.css — содержимое боковой панели магазина
+   ============================================================ */
+.shop-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(60, 60, 60, 0.5);
+  flex: none;
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Категория-группировка */
+.shop-category {
+  padding: 8px 12px 2px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--vscode-purple);
+}
