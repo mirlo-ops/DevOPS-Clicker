@@ -36,6 +36,9 @@ export const BALANCE = {
     maxDiscount: 0.5,         // максимум -50% к стоимости
     offlineBoostPerToken: 0.01, // +1% эффективности офлайна за токен
     maxOfflineEfficiency: 1.0,
+    // Каждый Cloud Token: +3% глобального производства (дублирует production.tokenProductionBonus,
+    // т.к. престиж-модули читают константу из секции prestige)
+    tokenProductionBonus: 0.03,
   },
 
   /* --- Стоимость генераторов --- */
