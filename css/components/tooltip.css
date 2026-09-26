@@ -46,3 +46,8 @@
   border-top: 1px dashed var(--vscode-border);
   color: var(--vscode-muted);
 }
+
+/* Цена в подсказках магазина */
+.tooltip__price {
+  color: var(--vscode-yellow);
+}
