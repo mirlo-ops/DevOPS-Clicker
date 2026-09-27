@@ -24,7 +24,7 @@ import { initRenderer, onGameClick, renderFrame, renderHeavy, invalidateRenderCa
 import { mountAchievements, refreshAchievements, invalidateAchievements } from "./ui/achievements-view.js";
 import { mountStats, refreshStats, showHelpModal } from "./ui/stats-view.js";
 import { mountPrestige, refreshPrestige } from "./ui/prestige-view.js";
-import { mountSettings } from "./ui/settings-view.js";
+import { mountSettings, refreshSettings } from "./ui/settings-view.js";
 import { openModal } from "./ui/modals.js";
 import { initMatrixRain, syncMatrixRain } from "./ui/matrix-rain.js";
 
