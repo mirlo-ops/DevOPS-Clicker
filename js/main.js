@@ -41,7 +41,7 @@ import { fmt, fmtInt } from "./utils/format.js";
 
 const dom = buildLayout();
 
-initTerminal(dom.terminalBody);
+initTerminal(dom.terminal);
 initNotifications();
 initFloating();
 initTooltips();
