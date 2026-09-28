@@ -4,12 +4,38 @@
  * Тяжёлые строки не плодим — один узел на всю игру.
  */
 
+import { escapeHtml } from "../utils/helpers.js";
+
 let node = null;
 let currentOwner = null;
 
 const ensureNode = () => {
   if (!node) node = document.getElementById("tooltip");
   return node;
+};
+
+/* ---------------- Конструкторы контента (Блок 3.2) ---------------- */
+
+/** Строка «метка — значение» для панели тултипа */
+export const tipRow = (label, value, cls = "") => ({ label, value, cls });
+
+/**
+ * Собрать HTML-панель тултипа в стиле подсказок IDE:
+ * заголовок, описание, таблица строк, нижняя подсказка.
+ */
+export const buildTooltip = ({ title = "", desc = "", rows = [], hint = "" }) => {
+  const parts = [];
+  if (title) parts.push(`<div class="tooltip__title">${escapeHtml(title)}</div>`);
+  if (desc) parts.push(`<div class="tooltip__desc">${escapeHtml(desc)}</div>`);
+  for (const r of rows) {
+    if (!r) continue;
+    parts.push(
+      `<div class="tooltip__row"><span>${escapeHtml(r.label)}</span>` +
+      `<b class="${r.cls || ""}">${escapeHtml(String(r.value))}</b></div>`
+    );
+  }
+  if (hint) parts.push(`<div class="tooltip__hint">${escapeHtml(hint)}</div>`);
+  return parts.join("");
 };
 
 /** Найти ближайший элемент с текстом подсказки */

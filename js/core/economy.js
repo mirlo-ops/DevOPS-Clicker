@@ -4,10 +4,11 @@
  */
 
 import { state } from "./state.js";
-import { BUILDINGS } from "../config/buildings.js";
-import { UPGRADES } from "../config/upgrades.js";
+import { BUILDINGS, BUILDING_CATEGORIES } from "../config/buildings.js";
+import { UPGRADES, UPGRADE_CATEGORIES } from "../config/upgrades.js";
 import { BALANCE } from "../config/balance.js";
 import { clamp } from "../utils/math.js";
+import { safeNum, fmtMult, fmtPct } from "../utils/format.js";
 import { OFFLINE_EFFICIENCY } from "../config/constants.js";
 
 /** Множитель для конкретного здания из купленных апгрейдов */
@@ -140,4 +141,39 @@ export function recomputeDerived() {
 export const buildingUnitCost = (cfg, ownedIndex) => {
   const raw = cfg.baseCost * Math.pow(cfg.growthFactor, ownedIndex);
   return raw * (1 - state.derived.costDiscount);
+};
+
+/* ---------------- Хелперы для UI: описание эффекта апгрейда ---------------- */
+
+const UPGRADE_TYPE_LABELS = {
+  click_mult: (v) => `Сила клика ×${fmtMult(v)}`,
+  building_mult: (v, target) => `${targetName(target)} ×${fmtMult(v)}`,
+  building_cat: (v, target) => `Категория «${categoryName(target)}» ×${fmtMult(v)}`,
+  global_mult: (v) => `Всё производство ×${fmtMult(v)}`,
+  crit_chance: (v) => `Шанс крита +${fmtPct(v)}`,
+  crit_mult: (v) => `Множитель крита +${round1(v)}`,
+  cps_click: (v) => `Клик получает +${fmtPct(v)} от CPS`,
+  offline_mult: (v) => `Офлайн-доход ×${fmtMult(v)}`,
+  event_bad: (v) => `Негативные события слабее на ${fmtPct(1 - v)}`,
+  event_good: (v) => `Позитивные события сильнее на ${fmtPct(v - 1)}`,
+  unlock: (v, target) => `Открывает: ${unlockName(target)}`,
+};
+
+const targetName = (id) => BUILDINGS.find((b) => b.id === id)?.name ?? id;
+const categoryName = (cat) =>
+  BUILDING_CATEGORIES[cat] ?? UPGRADE_CATEGORIES[cat] ?? cat;
+const unlockName = (t) =>
+  ({
+    autobuy: "GitOps Bot (автопокупка генераторов)",
+    advanced_stats: "Расширенная статистика",
+    canary: "Canary-деплой (пассивный бонус)",
+    flags_toggle: "Feature Flags (экспериментальные настройки)",
+    error_reduction: "Снижение негативных событий",
+  })[t] ?? t;
+const round1 = (n) => String(Math.round(safeNum(n) * 10) / 10);
+
+/** Человекочитаемое описание эффекта апгрейда (для тултипов) */
+export const upgradeEffectLabel = (cfg) => {
+  const fn = UPGRADE_TYPE_LABELS[cfg.type];
+  return fn ? fn(cfg.value, cfg.target) : "";
 };
