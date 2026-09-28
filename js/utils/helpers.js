@@ -13,6 +13,43 @@ export function el(tag, { cls = "", text = "", html, attrs = {}, dataset = {} } 
   return node;
 }
 
+/** Экранирование для безопасной вставки текста в HTML-шаблоны (тултипы и т.п.) */
+export function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+/**
+ * Плавная анимация числа в DOM-узле (interpolate от предыдущего значения).
+ * Используется для цифр дохода/CPS, чтобы они «перетекали», а не прыгали.
+ */
+const animatedNumbers = new WeakMap();
+export function animateNumber(node, toValue, formatFn, durationMs = 350) {
+  if (!node) return;
+  const from = animatedNumbers.get(node)?.current ?? toValue;
+  if (from === toValue) {
+    node.textContent = formatFn(toValue);
+    animatedNumbers.set(node, { current: toValue });
+    return;
+  }
+  const anim = { from, to: toValue, start: performance.now(), durationMs, current: toValue };
+  animatedNumbers.set(node, anim);
+  const step = (now) => {
+    if (animatedNumbers.get(node) !== anim) return; // перезаписана более свежей анимацией
+    const t = Math.min(1, (now - anim.start) / anim.durationMs);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    const value = from + (anim.to - from) * eased;
+    anim.current = t >= 1 ? anim.to : value;
+    node.textContent = formatFn(anim.current);
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
 /** Делегирование событий: вешаем один слушатель на контейнер */
 export function delegate(root, eventName, selector, handler) {
   root.addEventListener(eventName, (e) => {

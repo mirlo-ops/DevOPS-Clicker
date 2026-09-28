@@ -5,6 +5,7 @@
 
 import { state } from "../core/state.js";
 import { fmt, fmtInt, fmtRate } from "../utils/format.js";
+import { animateNumber } from "../utils/helpers.js";
 import { BUILDINGS } from "../config/buildings.js";
 import { isBuildingUnlocked } from "../core/buildings-system.js";
 import { visibleUpgrades } from "../core/upgrades-system.js";
@@ -35,11 +36,11 @@ export function initRenderer(registry) {
 
 /** Реакция на клик: всплывающее число, анимация кнопки, лог */
 export function onGameClick({ gain, crit, x, y }) {
-  // Анимация нажатия кнопки
+  // Анимация нажатия кнопки (тактильный отклик: scale(0.95) + отдача)
   dom.commitBtn?.classList.add("is-pressed");
-  setTimeout(() => dom.commitBtn?.classList.remove("is-pressed"), 90);
+  setTimeout(() => dom.commitBtn?.classList.remove("is-pressed"), 140);
 
-  // Всплывающее число в координатах курсора
+  // Всплывающее зелёное число «+N Commit», летит вверх и растворяется
   spawnFloat(x, y, gain, crit);
 
   // Лог кликов — с троттлингом, чтобы не забивать терминал

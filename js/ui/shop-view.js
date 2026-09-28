@@ -2,6 +2,12 @@
  * shop-view.js — боковая панель магазина: генераторы и улучшения.
  * Карточки создаются один раз, далее обновляются точечно (стоимость/доступность),
  * чтобы не пересоздавать DOM каждые 500 мс.
+ *
+ * UX (Блок 3):
+ *  - Кнопка Buy активна (ярко-синяя, hover, pointer) только когда хватает коммитов;
+ *    иначе — полупрозрачная, not-allowed, текст "Need X more commits".
+ *  - Тултипы карточек: название, описание, уровень, цена, +CPS/sec, доля в доходе %.
+ *  - Новые разблокированные здания пульсируют рамкой и носят бейдж NEW до первой покупки.
  */
 
 import { el, delegate } from "../utils/helpers.js";
@@ -12,18 +18,19 @@ import { BUY_AMOUNTS } from "../config/constants.js";
 import { fmt, fmtRate, fmtInt } from "../utils/format.js";
 import {
   isBuildingUnlocked, buildingBulkPrice, buildingAffordable, buyBuilding, nextLockedTeaser,
+  findBuildingCfg, buildingUnitCpsGain, buildingIncomeSharePct, markBuildingBought,
 } from "../core/buildings-system.js";
-import { visibleUpgrades, buyUpgrade } from "../core/upgrades-system.js";
-import { buildingContribution } from "../core/economy.js";
+import { visibleUpgrades, buyUpgrade, getUpgradeCfg } from "../core/upgrades-system.js";
+import { buildingContribution, upgradeEffectLabel } from "../core/economy.js";
 import { setSetting } from "../systems/settings.js";
-import { hideTooltip } from "./tooltips.js";
+import { hideTooltip, tipRow, buildTooltip } from "./tooltips.js";
 
 let dom = null;                 // реестр элементов
 let logFn = null;               // (type, text) => void
 let soundFn = null;             // (name) => void
 let side = "buildings";         // что показано в сайдбаре сейчас
 let listRoot = null;            // контейнер списка
-const cardRefs = new Map();     // id -> { node, costEl, ownedEl, metaEl, btnEl } для генераторов
+const cardRefs = new Map();     // id -> { node, ownedEl, costEl, metaEl, btnEl, cfg, seenAt }
 
 /** Инициализация магазина: режим покупки + делегирование кликов */
 export function initShop(registry, { log, sound }) {
@@ -32,16 +39,34 @@ export function initShop(registry, { log, sound }) {
   soundFn = sound;
 
   renderBuyMode();
-  setSetting("buyAmount", state.settings.buyAmount ?? 1); // синхронизация после загрузки сейва
+  syncBuyAmount();
 
+  /* FIX (Блок 1): клик по всей карточке тоже покупает — раньше игрок мог
+     «промахнуться» мимо маленькой кнопки Buy. Нормализуем id из атрибута
+     (trim) — обработчик больше не зависит от точного написания ключа. */
   delegate(dom.sidepanelBody, "click", "[data-buy-building]", (e, t) => {
     e.preventDefault();
-    purchaseBuilding(t.getAttribute("data-buy-building"));
+    purchaseBuilding(String(t.getAttribute("data-buy-building") ?? "").trim());
+  });
+  // Делегат на всю карточку: если кликнули не в кнопку — покупаем всё равно
+  delegate(dom.sidepanelBody, "click", ".building-card:not(.building-card--locked)", (e, t) => {
+    if (e.target.closest("[data-buy-building]")) return; // уже обработано выше
+    const id = String(t.dataset.building ?? "").trim();
+    if (id) purchaseBuilding(id);
   });
   delegate(dom.sidepanelBody, "click", "[data-buy-upgrade]", (e, t) => {
     e.preventDefault();
-    purchaseUpgrade(t.getAttribute("data-buy-upgrade"));
+    purchaseUpgrade(String(t.getAttribute("data-buy-upgrade") ?? "").trim());
   });
+}
+
+/** Режим покупки должен существовать в state.settings, иначе setSetting его проглотит */
+function syncBuyAmount() {
+  const cur = state.settings.buyAmount ?? 1;
+  if (!("buyAmount" in state.settings)) {
+    state.settings.buyAmount = 1; // страховка для старых сейвов
+  }
+  setSetting("buyAmount", cur); // синхронизация после загрузки сейва
 }
 
 /** Переключить содержимое сайдбара: 'buildings' | 'upgrades' */
@@ -53,7 +78,9 @@ export function showShopSide(next) {
   };
   dom.sidepanelHeader.textContent = titles[side] ?? "MARKETPLACE";
   dom.buyMode.style.display = side === "buildings" ? "" : "none";
+  lastSignature = ""; // при смене вкладки пересобрать принудительно
   rebuildList();
+  shopMaybeRebuild();
 }
 
 /* ---------------- Режим покупки x1/x10/x100/Max ---------------- */
@@ -89,22 +116,34 @@ function syncBuyMode() {
 
 /* ---------------- Покупки ---------------- */
 
-function purchaseBuilding(id) {
+function purchaseBuilding(rawId) {
+  const id = String(rawId ?? "").trim();
+  const cfg = findBuildingCfg(id); // нормализованный поиск (fix рассинхрона ключей)
+  if (!cfg) return;
   const amount = state.settings.buyAmount ?? 1;
   const mode = amount === "max" ? "max" : "fixed";
-  const res = buyBuilding(id, mode === "max" ? Infinity : Number(amount), mode);
+  const res = buyBuilding(cfg.id, mode === "max" ? Infinity : Number(amount), mode);
   if (!res.ok) {
-    if (res.reason === "afford") soundFn?.("error");
+    if (res.reason === "afford") {
+      soundFn?.("error");
+      flashNeedMore(cfg.id);
+    } else if (res.reason === "unknown") {
+      console.warn(`[shop] Unknown building id: "${rawId}"`);
+    }
+    refreshCards();
     return;
   }
-  const cfg = BUILDINGS.find((b) => b.id === id);
+  markBuildingBought(cfg.id);
   logFn?.("buy", `[shop] Purchased ${cfg.icon} ${cfg.name} x${res.bought} for ${fmt(res.cost)} commits`);
   soundFn?.("deploy");
+  // Мгновенный пересчёт стоимости следующего уровня и CPS в статус-баре
   refreshCards();
+  dom.commitBtn?.classList.remove("is-pressed");
   hideTooltip();
 }
 
-function purchaseUpgrade(id) {
+function purchaseUpgrade(rawId) {
+  const id = String(rawId ?? "").trim();
   const res = buyUpgrade(id);
   if (!res.ok) {
     if (res.reason === "afford") soundFn?.("error");
@@ -116,6 +155,14 @@ function purchaseUpgrade(id) {
   hideTooltip();
 }
 
+/** Короткая подсветка «не хватило» прямо на кнопке */
+function flashNeedMore(id) {
+  const ref = cardRefs.get(id);
+  if (!ref) return;
+  ref.node.classList.add("building-card--denied");
+  setTimeout(() => ref.node.classList.remove("building-card--denied"), 450);
+}
+
 /* ---------------- Полная пересборка списка ---------------- */
 
 function rebuildList() {
@@ -124,6 +171,8 @@ function rebuildList() {
     dom.sidepanelBody.innerHTML = "";
     dom.sidepanelBody.appendChild(listRoot);
   }
+  // Сохраняем «видели ли уже это здание» между пересборками (для NEW-бейджей)
+  const prevSeen = new Map([...cardRefs.entries()].map(([k, v]) => [k, v.seenAt]));
   cardRefs.clear();
   listRoot.innerHTML = "";
   const frag = document.createDocumentFragment();
@@ -137,14 +186,14 @@ function rebuildList() {
         lastCat = cfg.category;
         frag.appendChild(el("div", { cls: "shop-category", text: BUILDING_CATEGORIES[cfg.category] ?? cfg.category }));
       }
-      frag.appendChild(buildingCard(cfg));
+      frag.appendChild(buildingCard(cfg, prevSeen.get(cfg.id)));
     }
     const teaser = nextLockedTeaser();
     if (teaser) {
       frag.appendChild(el("div", { cls: "shop-category", text: "🔒 locked — скоро" }));
       frag.appendChild(el("div", {
         cls: "building-card building-card--locked",
-        html: `<span class="building-card__icon">🔒</span>
+        html: `<span class="building-card__icon building-card__icon--locked">🔒</span>
           <div><div class="building-card__name">???</div>
           <div class="building-card__desc">Следующий генератор откроется при ${fmt(teaser.need)} lifetime commits.</div></div>`,
       }));
@@ -169,13 +218,14 @@ function rebuildList() {
 
 /* ---------------- Карточки ---------------- */
 
-function buildingCard(cfg) {
+function buildingCard(cfg, seenAt = undefined) {
   const node = el("div", { cls: "building-card", attrs: { role: "group", "aria-label": cfg.name } });
   node.dataset.building = cfg.id;
 
   const icon = el("span", { cls: "building-card__icon", text: cfg.icon });
   const info = el("div", {});
-  const name = el("div", { cls: "building-card__name", text: cfg.name });
+  const name = el("div", { cls: "building-card__name" });
+  name.append(el("span", { text: cfg.name }), el("span", { cls: "new-badge", text: "NEW", hidden: "" }));
   const desc = el("div", { cls: "building-card__desc", text: cfg.desc });
   info.append(name, desc);
 
@@ -184,7 +234,7 @@ function buildingCard(cfg) {
   const cost = el("div", { cls: "building-card__cost", text: "—" });
   const meta = el("div", { cls: "building-card__meta", text: "" });
   const btn = el("button", {
-    cls: "btn btn--primary btn--small",
+    cls: "btn btn--primary btn--small buy-btn",
     text: "Buy",
     attrs: { type: "button", "aria-label": `Купить ${cfg.name}` },
   });
@@ -192,7 +242,11 @@ function buildingCard(cfg) {
   right.append(owned, cost, meta, btn);
 
   node.append(icon, info, right);
-  cardRefs.set(cfg.id, { node, owned, cost, meta, btn, cfg });
+  cardRefs.set(cfg.id, {
+    node, owned, cost, meta, btn, cfg,
+    badgeEl: name.querySelector(".new-badge"),
+    seenAt: seenAt ?? Date.now(),
+  });
   return node;
 }
 
@@ -206,9 +260,7 @@ function upgradeCard(cfg) {
     },
   });
   node.dataset.buyUpgrade = cfg.id;
-  node.textContent = cfg.icon;
-  node.dataset.tip =
-    `<b>${cfg.name}</b><br>${cfg.desc}<br><span class="tooltip__price">💰 ${fmt(cfg.cost)} commits</span>`;
+  node.appendChild(el("span", { cls: "upgrade-card__icon", text: cfg.icon }));
   // Enter/Space для клавиатуры
   node.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -219,47 +271,112 @@ function upgradeCard(cfg) {
   return node;
 }
 
+/* ---------------- Тултипы (Блок 3.2) ---------------- */
+
+function buildingTipHtml(ref) {
+  const { cfg } = ref;
+  const amount = state.settings.buyAmount ?? 1;
+  const affordN = buildingAffordable(cfg.id);
+  const count = amount === "max" ? Math.max(1, affordN) : Number(amount);
+  const price = buildingBulkPrice(cfg.id, count);
+  const have = state.buildings[cfg.id] ?? 0;
+  const unitGain = buildingUnitCpsGain(cfg.id);
+  const contrib = buildingContribution(cfg.id);
+  const share = buildingIncomeSharePct(cfg.id);
+  const missing = Math.max(0, price - state.resources.commits);
+  return buildTooltip({
+    title: `${cfg.icon} ${cfg.name}`,
+    desc: cfg.desc,
+    rows: [
+      tipRow("Уровень (владею)", fmtInt(have)),
+      tipRow(`Цена ×${count}`, fmt(price), missing > 0 ? "tooltip__price--miss" : ""),
+      tipRow("Прибавка к CPS", `+${fmtRate(unitGain)}/sec`),
+      tipRow("Вклад сейчас", `${fmtRate(contrib)}/sec`),
+      tipRow("Доля в общем доходе", `${share}%`),
+    ],
+    hint: missing > 0 ? `Не хватает ${fmt(missing)} коммитов` : "Клик по карточке — купить",
+  });
+}
+
+function upgradeTipHtml(cfg) {
+  const effect = upgradeEffectLabel(cfg);
+  const missing = Math.max(0, cfg.cost - state.resources.commits);
+  return buildTooltip({
+    title: `${cfg.icon} ${cfg.name}`,
+    desc: cfg.desc,
+    rows: [
+      tipRow("Эффект", effect || "—"),
+      tipRow("Стоимость", `${fmt(cfg.cost)} commits`, missing > 0 ? "tooltip__price--miss" : ""),
+    ],
+    hint: missing > 0 ? `Не хватает ${fmt(missing)} коммитов` : "Клик — установить",
+  });
+}
+
 /* ---------------- Точечное обновление (без пересборки DOM) ---------------- */
 
 /** Обновить цены/доступность генераторов и подсветку апгрейдов. Вызывается из renderer. */
 export function refreshCards() {
   if (side === "buildings") {
     const amount = state.settings.buyAmount ?? 1;
-    for (const { node, owned, cost, meta, btn, cfg } of cardRefs.values()) {
+    for (const ref of cardRefs.values()) {
+      const { node, owned, cost, meta, btn, cfg } = ref;
       const have = state.buildings[cfg.id] ?? 0;
       owned.textContent = fmtInt(have);
 
+      const affordN = buildingAffordable(cfg.id);
       let count;
       let price;
       if (amount === "max") {
-        count = Math.max(1, buildingAffordable(cfg.id));
-        price = buildingBulkPrice(cfg.id, buildingAffordable(cfg.id) || 1);
+        count = Math.max(1, affordN);
+        price = buildingBulkPrice(cfg.id, count);
       } else {
         count = Number(amount);
         price = buildingBulkPrice(cfg.id, count);
       }
-      const affordable = state.resources.commits >= price && (amount !== "max" || buildingAffordable(cfg.id) > 0);
+      const affordable = state.resources.commits >= price && (amount !== "max" || affordN > 0);
+
+      /* --- Состояние кнопки (Блок 3.1) --- */
+      const missing = Math.max(0, Math.ceil(price - state.resources.commits));
       cost.textContent = `💰 ${fmt(price)}`;
-      btn.textContent = amount === "max" ? `Buy max (${count})` : `Buy x${count}`;
-      btn.disabled = !affordable;
+      if (affordable) {
+        btn.disabled = false;
+        btn.classList.remove("btn--needs-more");
+        btn.textContent = amount === "max" ? `Buy max (${count})` : `Buy x${count}`;
+      } else {
+        btn.disabled = true;
+        btn.classList.add("btn--needs-more");
+        btn.textContent = `Need ${fmt(missing)} more commits`;
+      }
       node.classList.toggle("building-card--unaffordable", !affordable);
+      node.classList.toggle("building-card--affordable", affordable);
 
       const contrib = buildingContribution(cfg.id);
-      const unit = have > 0 ? contrib / have : cfg.baseProd;
+      const unit = buildingUnitCpsGain(cfg.id);
       meta.innerHTML = `+${fmtRate(unit)}/s each · total <b>${fmtRate(contrib)}</b>/s`;
 
-      node.dataset.tip =
-        `<b>${cfg.icon} ${cfg.name}</b><br>${cfg.desc}<br>` +
-        `Стоимость x${amount === "max" ? buildingAffordable(cfg.id) : amount}: <b>${fmt(price)}</b><br>` +
-        `Вклад в CPS: <b>${fmtRate(contrib)}</b> (${state.derived.cps > 0 ? Math.round((contrib / state.derived.cps) * 100) : 0}% от общего)`;
+      /* --- NEW-бейдж / пульсация до первой покупки (Блок 3.4) --- */
+      const isNew = have === 0 && !ref.seenAtMarked;
+      if (isNew) {
+        node.classList.add("building-card--new");
+        if (ref.badgeEl) ref.badgeEl.hidden = false;
+      } else {
+        node.classList.remove("building-card--new");
+        if (ref.badgeEl) ref.badgeEl.hidden = true;
+        ref.seenAtMarked = true;
+      }
+
+      node.dataset.tip = buildingTipHtml(ref);
     }
   } else {
-    // Апгрейды: просто подсвечиваем те, что по карману
+    // Апгрейды: подсвечиваем те, что по карману, навешиваем тултипы
     dom.sidepanelBody.querySelectorAll("[data-buy-upgrade]").forEach((node) => {
-      const id = node.getAttribute("data-buy-upgrade");
-      const cfg = UPGRADES.find((u) => u.id === id);
+      const id = String(node.getAttribute("data-buy-upgrade") ?? "").trim();
+      const cfg = getUpgradeCfg(id);
       if (!cfg) return;
-      node.classList.toggle("upgrade-card--unaffordable", state.resources.commits < cfg.cost);
+      const canAfford = state.resources.commits >= cfg.cost;
+      node.classList.toggle("upgrade-card--unaffordable", !canAfford);
+      node.classList.toggle("upgrade-card--affordable", canAfford);
+      node.dataset.tip = upgradeTipHtml(cfg);
     });
   }
 }
