@@ -11,6 +11,12 @@ let container = null;
 const promptLine = el("div", { cls: "terminal__line" });
 
 export const initTerminal = (node) => {
+  // Guard: если элемент терминала не найден в реестре — предупреждаем и выходим,
+  // чтобы не ронять всю цепочку инициализации main.js
+  if (!node) {
+    console.warn("[terminal-log] Контейнер логов терминала не найден — initTerminal пропущен.");
+    return;
+  }
   container = node;
   container.innerHTML = "";
   promptLine.appendChild(el("span", { cls: "terminal__prompt", text: "$ " }));
