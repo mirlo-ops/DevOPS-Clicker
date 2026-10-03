@@ -69,6 +69,8 @@ export const createInitialState = () => ({
     reducedMotion: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
     featureFlagsExp: false, // экспериментальные бонусы (Feature Flags upgrade)
     buyAmount: 1,           // режим покупки генераторов x1/x10/x100
+    cloudSync: true,        // облачный синк с Firebase (если доступен)
+    playerName: "",         // имя для таблицы лидеров
   },
 
   derived: {

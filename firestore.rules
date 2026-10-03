@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Облачные сейвы: доступ только владельцу (по uid из Firebase Auth)
+    match /saves/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Таблица лидеров: читает каждый, пишет только владелец профиля;
+    // валидация полей — чтобы в топ нельзя было записать Infinity/имя-лол.
+    match /leaderboard/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.lifetimeCommits is number
+        && request.resource.data.lifetimeCommits >= 0
+        && request.resource.data.lifetimeCommits < 1e18
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 32;
+      allow delete: if false;
+    }
+  }
+}
