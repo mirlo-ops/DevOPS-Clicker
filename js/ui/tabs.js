@@ -5,7 +5,7 @@
 
 import { el } from "../utils/helpers.js";
 
-const VIEWS = ["clicker", "buildings", "upgrades", "prestige", "achievements", "stats", "settings"];
+const VIEWS = ["clicker", "buildings", "upgrades", "prestige", "cloud", "achievements", "stats", "settings"];
 
 // Представления, которым нужен магазин в сайдбаре (кликер показывает там генераторы)
 const SHOP_VIEWS = new Set(["clicker", "buildings", "upgrades"]);

@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "lifetimeCommits", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
